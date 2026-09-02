@@ -1,4 +1,4 @@
-# 🔗 X Clean Copy Link  
+# 🧼 X Clean Copy Link  
 
 [![Version](https://img.shields.io/badge/version-1.8-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
