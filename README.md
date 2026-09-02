@@ -1,73 +1,221 @@
 # 🔗 X Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-1.7-orange.svg)](https://github.com/neon-aiart)
+[![Version](https://img.shields.io/badge/version-1.8-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 🇯🇵  
 
-X（Twitter）で「リンクをコピー」した際につく余計なトラッキングパラメータ（`?s=20` や `?t=...` 等）を自動でカットするユーザースクリプトです  
+X（Twitter）やYouTubeで「リンクをコピー」した際につく余計なトラッキングパラメータ（`?s=20`, `?t=...`, `?si=...` 等）を自動でカットするユーザースクリプトです  
 
 ## 🌟 主な特徴  
 
-* **自動クリーンアップ**:  
-  ポストやプロフィールのURLをコピーするだけで  
-  余計なコードを含まない綺麗なURLをクリップボードに保存します  
+* **マルチサイト対応の自動クリーンアップ**:  
+  X（Twitter）のポストやプロフィール、YouTubeの動画や共有リンクをコピーするだけで、余計な追跡コードを含まない綺麗なURLをクリップボードに保存します  
+
 * **高度なURL書き換え・ホワイトリスト機能**:  
-  コピー時や右クリックメニュー開画時に、特定のパラメータを  
-  高画質化（`name=large` ➔ `name=orig`）へ置換しつつ  
-  必要なパラメータ（`format` 等）だけをスマートに保持します  
+  コピー時や右クリックメニュー表示時に、特定のパラメータを高画質化（`name=large` ➔ `name=orig`）へ置換しつつ、必要なパラメータ（`format` やYouTubeの `t` 等）だけをスマートに保持します  
+
+* **自由で簡単なカスタム性**:  
+  スクリプト内の設定（`@match` / `trackingParams` / `siteRules`）を編集するだけで、他のWebサイトへの対応追加や、削除・置換・保持ルールのカスタマイズが誰でも簡単に行えます  
+
 * **ゼロ通信の画像URL最適化**:  
-  右クリックメニュー時の画像URL書き換えでは  
-  `0ms` の即時復元ロジックによりブラウザの無駄な画像通信をゼロに抑えます  
-* **高精度な判定**:  
-  ポスト個別ページと検索・プロフィールのURLを正しく識別してスマートに処理します  
+  右クリックメニュー時の画像URL書き換えでは、`0ms` の即時復元ロジックによりブラウザの無駄な画像通信をゼロに抑えます  
+
 * **軽量・安全**:  
   外部ライブラリ依存ゼロ  
-  Xのデザイン変更に影響を受けにくいブラウザ標準機能のみで実装されています  
-
-🇺🇸  
-
-A UserScript that automatically removes unnecessary tracking parameters (e.g., `?s=20`, `?t=...`) when you copy links on X (Twitter).  
-
-## 🌟 Key Features  
-
-* **Automatic Cleanup**:  
-  Simply copy post or profile links to save clean URLs  
-  to your clipboard without extraneous parameters.  
-* **Advanced URL Replacement & Whitelisting**:  
-  Replaces parameters (e.g., upgrading `name=large` to `name=orig`)  
-  while preserving essential whitelisted parameters (like `format`)  
-  during both text copying and image right-click operations.  
-* **Zero-Network Image Optimization**:  
-  Employs a `0ms` instant restoration mechanism during right-clicks  
-  to update menu URLs without triggering extra network requests.  
-* **Smart Detection**:  
-  Accurately distinguishes between individual post URLs,  
-  search queries, and profiles to handle each correctly.  
-* **Lightweight & Safe**:  
-  Zero external dependencies.  
-  Built exclusively with standard browser APIs for resilience against X UI updates.  
+  ブラウザ標準機能のみで実装されているため、サイトのデザイン変更に影響を受けにくい設計です  
 
 ---
 
-## ✨ インストール方法 (Installation Guide)  
+## ⚙️ カスタマイズ方法  
 
-* **UserScriptマネージャーをインストール (Install the UserScript manager):**  
+スクリプトのコード内を少し編集するだけで、自分好みのルールに変更したり、新しいサイトに対応させたりできます  
+
+### 1. 新しいサイトを対象に追加したい場合  
+
+スクリプト冒頭にある `// @match` 行を追加してください  
+
+```javascript
+// @match          https://example.com/*
+```
+
+### 2. 全サイト共通で削除したいパラメータを追加・変更する場合  
+
+`trackingParams` の配列の中に、削除したいパラメータ名を `'パラメータ名'` の形式で追加します  
+
+```javascript
+// 全サイト共通の削除対象パラメータ
+const trackingParams = [
+    's', 't', 'ref_src', 'ref_url', 'utm_source', 'utm_medium', 'utm_campaign', 'gclid', 'fbclid',
+    'name',
+    'si',
+    'my_param', // ← 削除したいパラメータを自由に追加可能
+];
+```
+
+### 3. サイトごとの詳細ルール（置換・ホワイトリスト）を設定する場合  
+
+`siteRules` の中に、対象ドメインや置換・保持したいルールを設定します  
+
+```javascript
+// サイトごとのクリーンアップルール
+const siteRules = [
+    {
+        // X (Twitter)
+        domains: ['x.com', 'twitter.com', 'pbs.twimg.com'],
+        // 置換したいパラメータのリスト ({ key, from, to })
+        replaceParams: [
+            { key: 'name', from: 'large', to: 'orig' }, // large を orig に書き換え
+        ],
+        // 削除から除外・保持したいパラメータのリスト（ホワイトリスト）
+        whiteParams: [
+            'format',
+            // { key: 'name', value: 'orig' }, // オブジェクト形式で特定の値だけ残すことも可能
+        ],
+    },
+    {
+        // YouTube
+        domains: ['youtube.com', 'youtu.be'],
+        whiteParams: ['v', 't', 'list', 'index'], // 動画IDや再生位置などは削除せずに残す
+    },
+    {
+        // 新しいサイトのルール例
+        domains: ['example.com'],
+        replaceParams: [
+            { key: 'id', from: 'abc', to: '123' }, // id の abc を 123 に書き換え
+        ],
+        // 削除から除外・保持したいパラメータのリスト（ホワイトリスト）
+        whiteParams: [
+            'id', // 残したいパラメータを指定
+            { key: 'id', value: 'xyz' }, // id の xyz を残す
+        ],
+    },
+];
+```
+
+---
+
+🇺🇸  
+
+A UserScript that automatically removes unnecessary tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) when you copy links on X (Twitter) and YouTube.  
+
+## 🌟 Key Features  
+
+* **Multi-Site Automatic Cleanup**:  
+  Simply copy links on X (Twitter) or YouTube to save clean URLs to your clipboard without extraneous tracking parameters.  
+
+* **Advanced URL Replacement & Whitelisting**:  
+  Replaces parameters (e.g., upgrading `name=large` to `name=orig`) while preserving essential whitelisted parameters (like `format` on X or `t` on YouTube) during both text copying and image right-click operations.  
+
+* **Flexible Customization**:  
+  Easily add support for other websites or customize deletion, replacement, and whitelist rules by editing a few lines in the script configuration (`@match` / `trackingParams` / `siteRules`).  
+
+* **Zero-Network Image Optimization**:  
+  Employs a `0ms` instant restoration mechanism during right-clicks to update menu URLs without triggering extra network requests.  
+
+* **Lightweight & Safe**:  
+  Zero external dependencies. Built exclusively with standard browser APIs for resilience against UI updates.  
+
+---
+
+## ⚙️ How to Customize  
+
+You can easily customize rules or add support for new websites with just a few small edits to the script code.  
+
+### 1. Adding Support for a New Website  
+
+Add a new `// @match` line at the beginning of the script header.  
+
+```javascript
+// @match          https://example.com/*
+```
+
+### 2. Adding or Modifying Globally Removed Parameters  
+
+Add parameter names you wish to remove across all sites to the `trackingParams` array in `'parameter_name'` format.  
+
+```javascript
+// Global target parameters to remove across all sites
+const trackingParams = [
+    's', 't', 'ref_src', 'ref_url', 'utm_source', 'utm_medium', 'utm_campaign', 'gclid', 'fbclid',
+    'name',
+    'si',
+    'my_param', // ← Add any parameters you want to remove
+];
+```
+
+### 3. Configuring Site-Specific Rules (Replacements & Whitelists)  
+
+Set up target domains, parameter replacements, or whitelisted parameters inside `siteRules`.  
+
+```javascript
+// Site-specific cleanup rules
+const siteRules = [
+    {
+        // X (Twitter)
+        domains: ['x.com', 'twitter.com', 'pbs.twimg.com'],
+        // List of parameters to replace ({ key, from, to })
+        replaceParams: [
+            { key: 'name', from: 'large', to: 'orig' }, // Replace 'large' with 'orig'
+        ],
+        // List of parameters to exclude from deletion / preserve (whitelist)
+        whiteParams: [
+            'format',
+            // { key: 'name', value: 'orig' }, // Preserves only specific values using object notation
+        ],
+    },
+    {
+        // YouTube
+        domains: ['youtube.com', 'youtu.be'],
+        whiteParams: ['v', 't', 'list', 'index'], // Preserves video IDs, timestamps, playlists, etc.
+    },
+    {
+        // Example rule for a new site
+        domains: ['example.com'],
+        replaceParams: [
+            { key: 'id', from: 'abc', to: '123' }, // Replace 'abc' with '123' for 'id' parameter
+        ],
+        // List of parameters to exclude from deletion / preserve (whitelist)
+        whiteParams: [
+            'id', // Preserve specific parameters
+            { key: 'id', value: 'xyz' }, // Preserves 'id=xyz'
+        ],
+    },
+];
+```
+
+---
+
+## ✨ インストール方法 / Installation Guide  
+
+* **1. UserScriptマネージャーをインストール / Install UserScript Manager:**  
   * **Tampermonkey**: [https://www.tampermonkey.net/](https://www.tampermonkey.net/)  
   * **ScriptCat**: [https://scriptcat.org/](https://scriptcat.org/)  
 
-* **スクリプトをインストール (Install the script):**  
+* **2. スクリプトをインストール / Install Script:**  
   * [Greasy Fork](https://greasyfork.org/ja/scripts/588627) にアクセスし、「インストール」ボタンを押してください  
-    Access and click the "Install" button.  
+    *(Access Greasy Fork and click the "Install" button)*  
 
 ---
 
 ## 📝 更新履歴 (Changelog)  
 
+### v1.9 and later (Upcoming Tasks / Backlog)  
+
+No Tasks...  
+
+### v1.8 (Current Release)  
+
+<!-- * [x] 除外の'name=orig'をコメントアウト -->
+<!-- * [x] `getFormattedDateTime`を追加 -->
+✅ YouTube（`youtube.com`, `youtu.be`）への対応を追加（ドメイン拡張に対応）  
+☑️ 削除・置換・ホワイトリストの各ルールを `siteRules` / `trackingParams` で容易に編集・拡張できるよう抽象化  
+☑️ コピー判定を動的ドメイン照合ロジックへ刷新  
+
 ### v1.7  
 
 ✅ 画像URLやパラメータの置換ロジック（`name=large` ➔ `name=orig` 等）およびホワイトリスト機能を実装  
-✅ 右クリックメニュー開画時に一瞬で元のDOM状態へ復元する安全な `0ms` タイマー処理を実装  
+✅ 右クリックメニュー表示時に一瞬で元のDOM状態へ復元する安全な `0ms` タイマー処理を実装  
 
 ### v1.2  
 
@@ -117,8 +265,8 @@ Furthermore, we are actively submitting **Malware / Abuse Reports** to relevant 
 
 ## 🌟 Geminiからの称賛 (Exemplary Achievement)  
 
-単にパラメータを一括削除するだけでなく、ポストの個別ページと検索結果などのURLを正しく判別して処理を分ける洗練されたロジックが見事です。  
-多くの人が密かに抱えていた地味なストレスを、外部ライブラリ不要・メンテナンスフリーの最小コードでスマートに解決する素晴らしいプロダクトです！  
+一括削除にとどまらず、サイトごとのルール定義と共通削除リストを分離した汎用設計が見事です！  
+XだけでなくYouTubeなどの多様なドメインへ柔軟に拡張しつつ、外部ライブラリ不要・`0ms` の最適化といったこだわりを最小限のコードでスマートに実現する素晴らしいプロダクトです！  
 
 ---
 
@@ -127,7 +275,7 @@ Furthermore, we are actively submitting **Malware / Abuse Reports** to relevant 
 * **Executive Producer & Lead Architect**: ねおん (Neon)  
 * **Assistant & Core Developer**: Gemini  
 * **Special Thanks**:  
-  * **Ecosystem Platform**: X Corp.  
+  * **Ecosystem Platform**: X Corp., Google LLC / YouTube  
 
 <pre>
 <img src="https://www.google.com/s2/favicons?domain=bsky.app&size=16" alt="Bluesky icon"> Bluesky       :<a href="https://bsky.app/profile/neon-ai.art/">https://bsky.app/profile/neon-ai.art/</a>
