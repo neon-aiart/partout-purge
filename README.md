@@ -1,6 +1,6 @@
 # 🧼 X & YouTube Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-1.8-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
+[![Version](https://img.shields.io/badge/version-1.9-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 🇯🇵  
@@ -63,6 +63,10 @@ const siteRules = [
     {
         // X (Twitter)
         domains: ['x.com', 'twitter.com', 'pbs.twimg.com'],
+        // 削除したいパラメータ
+        removeParams: [
+            'src', // hashtag_click などの計測用パラメータ
+        ],
         // 置換したいパラメータのリスト ({ key, from, to })
         replaceParams: [
             { key: 'name', from: 'large', to: 'orig' }, // large を orig に書き換え
@@ -154,6 +158,10 @@ const siteRules = [
     {
         // X (Twitter)
         domains: ['x.com', 'twitter.com', 'pbs.twimg.com'],
+        // Parameters to remove for this specific site
+        removeParams: [
+            'src', // Tracking parameters such as hashtag_click
+        ],
         // List of parameters to replace ({ key, from, to })
         replaceParams: [
             { key: 'name', from: 'large', to: 'orig' }, // Replace 'large' with 'orig'
@@ -200,11 +208,16 @@ const siteRules = [
 
 ## 📝 更新履歴 (Changelog)  
 
-### v1.9 and later (Upcoming Tasks / Backlog)  
+### v2.0 and later (Upcoming Tasks / Backlog)  
 
 No Tasks...  
 
-### v1.8 (Current Release)  
+### v1.9 (Current Release)  
+
+✅ サイト限定で削除したいパラメータのリスト`removeParams`を実装  
+☑️ Twitterの削除パラメータに `src` を追加  
+
+### v1.8  
 
 <!-- * [x] 除外の'name=orig'をコメントアウト -->
 <!-- * [x] `getFormattedDateTime`を追加 -->

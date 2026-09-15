@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           X & YouTube Clean Copy Link
-// @version        1.8
+// @version        1.9
 // @icon           data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧼</text></svg>
 // @description    Automatically removes tracking parameters (e.g., ?s=20, ?t=..., ?si=..., utm_*) when copying links on X (Twitter) and YouTube to keep your URLs clean.
 // @description:ja X（Twitter）やYouTubeでリンクをコピーしたときに、?s=20 や ?si=... などの不要なトラッキングコードを自動で削除する軽量スクリプトです
@@ -38,7 +38,6 @@
 
     const SCRIPT_VERSION = '1.8';
     const DEBUG = false;
-
     if (DEBUG) console.log(`[${getFormattedDateTime()}] 🧼 X Clean Copy Link v${SCRIPT_VERSION}: デバッグモード`);
 
     // 全サイト共通の削除対象パラメータ
@@ -51,9 +50,13 @@
     const siteRules = [ {
         // X (Twitter)
         domains: ['x.com', 'twitter.com', 'pbs.twimg.com',],
+        // 削除したいパラメータ
+        removeParams: [
+            'src', // hashtag_click などの計測用パラメータ
+        ],
         // 置換したいパラメータのリスト ({ key, from, to })
         replaceParams: [
-            { key: 'name', from: 'large', to: 'orig', },
+            { key: 'name', from: 'large', to: 'orig', }, // large を orig に書き換え
         ],
         // 削除から除外・保持したいパラメータのリスト（ホワイトリスト）
         whiteParams: [
@@ -96,11 +99,12 @@
             );
 
             const replaceParams = matchedRule?.replaceParams || [];
+            const removeParams = matchedRule?.removeParams || [];
             const whiteParams = matchedRule?.whiteParams || [];
 
             if (DEBUG) {
                 console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 X-Clean: CleanURL:`, url.href);
-                console.log(`[DEBUG] [${getFormattedDateTime()}] X-Clean: Matched Rule:`, { url, replaceParams, whiteParams, });
+                console.log(`[DEBUG] [${getFormattedDateTime()}] X-Clean: Matched Rule:`, { url, replaceParams, removeParams, whiteParams, });
             }
 
             // 1. パラメータの置換処理
@@ -111,8 +115,11 @@
                 }
             });
 
+            // 共通削除リストとサイト個別削除リストを統合（重複排除）
+            const targetDeleteParams = Array.from(new Set([...trackingParams, ...removeParams,]));
+
             // 2. 指定したパラメータの削除処理 (whiteParams の条件に一致するものは削除しない)
-            trackingParams.forEach((param) => {
+            targetDeleteParams.forEach((param) => {
                 const currentValue = url.searchParams.get(param);
 
                 // ホワイトリストに含まれるか判定
