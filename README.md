@@ -204,6 +204,10 @@ const siteRules = [
   * [Greasy Fork](https://greasyfork.org/ja/scripts/588627) にアクセスし、「インストール」ボタンを押してください  
     *(Access Greasy Fork and click the "Install" button)*  
 
+⭐ [スター](https://github.com/neon-aiart/x-clean-copy-link)をポチッとお願いします✨ (Please hit the [Star] button!)  
+
+<a href="https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link"><img src="https://b.hatena.ne.jp/favicon.ico" width="20" height="20" alt="📖"></a> ポチッと[ブックマーク](https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link)をお願い致します✨ (Please click the [Bookmark] button!)  
+
 ---
 
 ## 📝 更新履歴 (Changelog)  
