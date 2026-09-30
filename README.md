@@ -201,7 +201,7 @@ const siteRules = [
   * **ScriptCat**: [https://scriptcat.org/](https://scriptcat.org/)  
 
 * **2. スクリプトをインストール / Install Script:**  
-  * [Greasy Fork](https://greasyfork.org/ja/scripts/588627) にアクセスし、「インストール」ボタンを押してください  
+  * [Greasy Fork](https://greasyfork.org/scripts/588627) にアクセスし、「インストール」ボタンを押してください  
     *(Access Greasy Fork and click the "Install" button)*  
 
 ⭐ [スター](https://github.com/neon-aiart/x-clean-copy-link)をポチッとお願いします✨ (Please hit the [Star] button!)  
