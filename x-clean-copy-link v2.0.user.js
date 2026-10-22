@@ -74,7 +74,7 @@
         // Bluesky ＆ TOKIMEKI
         domains: ['bsky.app', ],
         replacePath: [
-            { from: '/img/feed_thumbnail/', to: '/img/feed_fullsize/', },
+            { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
     }, {
         // Amazon (ドメイン判定を安全な文字列配列＋プレフィックス/完全一致に変更)
