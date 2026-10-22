@@ -1,11 +1,11 @@
 # 🧼 Partout Purge: Pure Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-2.0-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
+[![Version](https://img.shields.io/badge/version-2.0-orange.svg)](https://github.com/neon-aiart/partout-purge)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
-⭐ [スター](https://github.com/neon-aiart/x-clean-copy-link)をポチッとお願いします✨ (Please hit the [Star] button!)  
+⭐ [スター](https://github.com/neon-aiart/partout-purge)をポチッとお願いします✨ (Please hit the [Star] button!)  
 
-<a href="https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link"><img src="https://b.hatena.ne.jp/favicon.ico" width="20" height="20" alt="📖"></a> ポチッと[ブックマーク](https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link)をお願い致します✨ (Please click the [Bookmark] button!)  
+<a href="https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/partout-purge"><img src="https://b.hatena.ne.jp/favicon.ico" width="20" height="20" alt="📖"></a> ポチッと[ブックマーク](https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/partout-purge)をお願い致します✨ (Please click the [Bookmark] button!)  
 
 ---
 
