@@ -1,25 +1,36 @@
-# 🧼 X & YouTube Clean Copy Link  
+# 🧼 Partout Purge: Pure Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-1.9-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
+[![Version](https://img.shields.io/badge/version-2.0-orange.svg)](https://github.com/neon-aiart/x-clean-copy-link)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
+
+⭐ [スター](https://github.com/neon-aiart/x-clean-copy-link)をポチッとお願いします✨ (Please hit the [Star] button!)  
+
+<a href="https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link"><img src="https://b.hatena.ne.jp/favicon.ico" width="20" height="20" alt="📖"></a> ポチッと[ブックマーク](https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link)をお願い致します✨ (Please click the [Bookmark] button!)  
+
+---
 
 🇯🇵  
 
-X（Twitter）やYouTubeで「リンクをコピー」した際につく余計なトラッキングパラメータ（`?s=20`, `?t=...`, `?si=...` 等）を自動でカットするユーザースクリプトです  
+X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、リンクや画像リンクの不要なトラッキングパラメータ（`?s=20`, `?t=...`, `?si=...` など）を自動削除し、最適化するUserScriptです（編集で拡張可能）  
 
 ## 🌟 主な特徴  
 
 * **マルチサイト対応の自動クリーンアップ**:  
-  X（Twitter）のポストやプロフィール、YouTubeの動画や共有リンクをコピーするだけで、余計な追跡コードを含まない綺麗なURLをクリップボードに保存します  
+  X（Twitter）のポストやプロフィール、YouTubeの動画、Blueskyの画像、Amazonの商品リンクや画像などをコピーするだけで、追跡コードを含まない綺麗なURLをクリップボードに保存します  
 
-* **高度なURL書き換え・ホワイトリスト機能**:  
-  コピー時や右クリックメニュー表示時に、特定のパラメータを高画質化（`name=large` ➔ `name=orig`）へ置換しつつ、必要なパラメータ（`format` やYouTubeの `t` 等）だけをスマートに保持します  
+* **充実したグローバル＆サイト別制御**:  
+  全サイト共通の削除リスト（`TRACKING_PARAMS`）に加え、各サイトごとの詳細なルールを組み合わせることで、不要なパラメータの削除からパスの書き換えまでリンクを自在に最適化できます  
+  * `removeParams`: 不要なトラッキングパラメータの削除  
+  * `replaceParams`: パラメータの値を別の値に置換  
+  * `whiteParams`: 削除対象から除外・保持したいパラメータを指定（ホワイトリスト）  
+  * `replacePath`: URLのパスの一部を書き換え  
+  *(🍙 すべてのルールやドメイン判定で正規表現（RegExp）が利用可能)*  
 
 * **自由で簡単なカスタム性**:  
-  スクリプト内の設定（`@match` / `trackingParams` / `siteRules`）を編集するだけで、他のWebサイトへの対応追加や、削除・置換・保持ルールのカスタマイズが誰でも簡単に行えます  
+  スクリプト内の設定（`TRACKING_PARAMS` / `SITE_RULES`）を編集するだけで、他のWebサイトへの対応追加や、削除・置換・保持ルールのカスタマイズが誰でも簡単に行えます  
 
-* **ゼロ通信の画像URL最適化**:  
-  右クリックメニュー時の画像URL書き換えでは、`0ms` の即時復元ロジックによりブラウザの無駄な画像通信をゼロに抑えます  
+* **遅延ゼロの即時書き換え・復元ロジック**:  
+  右クリックからの「リンクのコピー」「画像リンクをコピー」では、`0ms` のマクロタスクによる即時復元により、ブラウザの無駄な通信をゼロに抑えつつクリーンなURLをゲットできます  
 
 * **軽量・安全**:  
   外部ライブラリ依存ゼロ  
@@ -31,94 +42,115 @@ X（Twitter）やYouTubeで「リンクをコピー」した際につく余計�
 
 スクリプトのコード内を少し編集するだけで、自分好みのルールに変更したり、新しいサイトに対応させたりできます  
 
-### 1. 新しいサイトを対象に追加したい場合  
+### 1. 全サイト共通で削除したいパラメータを追加・変更する場合  
 
-スクリプト冒頭にある `// @match` 行を追加してください  
+`TRACKING_PARAMS` の配列の中に、削除したいパラメータ名を `'a'` `` `b` `` `"c"` などの文字列形式か `/正規表現/` で追加します  
 
 ```javascript
-// @match          https://example.com/*
+    // 全サイト共通の削除対象パラメータ
+    const TRACKING_PARAMS = ['s', 't', 'si', 'gclid', 'fbclid',
+        /^ref_/, /^utm_/, // ← 「ref_」「utm_」で始まるパラメータに全部マッチ
+    ];
 ```
 
-### 2. 全サイト共通で削除したいパラメータを追加・変更する場合  
+### 2. サイトごとの詳細ルール（削除・置換・ホワイトリスト・パス書き換え）を設定する場合  
 
-`trackingParams` の配列の中に、削除したいパラメータ名を `'パラメータ名'` の形式で追加します  
+`SITE_RULES` では、対象となるドメインに対して、以下の４つの要素を組み合わせて柔軟なルールを設定できます  
+すべてに文字列または正規表現が使えます  
+
+* `domains`: 対象のドメイン  
+* `removeParams`（パラメータの削除）: 指定したパラメータ名をURLから完全に削除します  
+* `replaceParams`（パラメータの置換）: 特定のキーに一致するパラメータの値を別の値に書き換えます  
+* `whiteParams`（削除からの保護）: 削除対象（`TRACKING_PARAMS` や `removeParams`）にヒットした場合でも、残したいパラメータを指定して保護します  
+* `replacePath`（パス書き換え）: URLのパス階層そのものを書き換えます（高画質化や不要なパスの削ぎ落としに便利）  
+
+> [!CAUTION]  
+> `replaceParams`（値の置換）や `replacePath`（パスの書き換え）は、パラメータの削除・ホワイトリストの対象外です（独立して先に処理される）  
+> `whiteParams` は `TRACKING_PARAMS` や `removeParams` による削除からパラメータを守りたい場合に設定します  
+
+### 3. 書き方の例（v2.0のコードの中の`SITE_RULES`）  
 
 ```javascript
-// 全サイト共通の削除対象パラメータ
-const trackingParams = [
-    's', 't', 'ref_src', 'ref_url', 'utm_source', 'utm_medium', 'utm_campaign', 'gclid', 'fbclid',
-    'name',
-    'si',
-    'my_param', // ← 削除したいパラメータを自由に追加可能
-];
-```
-
-### 3. サイトごとの詳細ルール（置換・ホワイトリスト）を設定する場合  
-
-`siteRules` の中に、対象ドメインや置換・保持したいルールを設定します  
-
-```javascript
-// サイトごとのクリーンアップルール
-const siteRules = [
-    {
+    // サイトごとのクリーンアップルール
+    const SITE_RULES = [ {
         // X (Twitter)
-        domains: ['x.com', 'twitter.com', 'pbs.twimg.com'],
+        domains: ['x.com', 'twitter.com', 'pbs.twimg.com',],
         // 削除したいパラメータ
         removeParams: [
+            'name',
             'src', // hashtag_click などの計測用パラメータ
         ],
         // 置換したいパラメータのリスト ({ key, from, to })
         replaceParams: [
-            { key: 'name', from: 'large', to: 'orig' }, // large を orig に書き換え
+            { key: 'name', from: /^(?:large|\d+x\d+)$/, to: 'orig', }, // 「large」または「数字x数字」を orig に書き換え
         ],
         // 削除から除外・保持したいパラメータのリスト（ホワイトリスト）
         whiteParams: [
             'format',
-            // { key: 'name', value: 'orig' }, // オブジェクト形式で特定の値だけ残すことも可能
+            { key: 'name', value: 'orig', }, // 'name=orig'のときは削除しない
         ],
-    },
-    {
+    }, {
         // YouTube
-        domains: ['youtube.com', 'youtu.be'],
-        whiteParams: ['v', 't', 'list', 'index'], // 動画IDや再生位置などは削除せずに残す
-    },
-    {
-        // 新しいサイトのルール例
-        domains: ['example.com'],
-        replaceParams: [
-            { key: 'id', from: 'abc', to: '123' }, // id の abc を 123 に書き換え
+        domains: [ 'youtube.com', 'youtu.be', ],
+        whiteParams: [ 'v', 't', 'list', 'index', ],
+    }, {
+        // note
+        domains: [ 'note.com', ],
+        removeParams: [ 'sub_rt', ],
+    }, {
+        // Bluesky ＆ TOKIMEKI
+        domains: ['bsky.app', ],
+        replacePath: [
+            { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
-        // 削除から除外・保持したいパラメータのリスト（ホワイトリスト）
-        whiteParams: [
-            'id', // 残したいパラメータを指定
-            { key: 'id', value: 'xyz' }, // id の xyz を残す
+    }, {
+        // Amazon (ドメイン判定を安全な文字列配列＋プレフィックス/完全一致に変更)
+        domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
+        removeParams: [
+            // 基本・最新のトラッキングパラメータ
+            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc',
+            // pd_rd_*, pf_rd_*, などの計測・レコメンド系パラメータをまとめて一網打尽にする正規表現
+            /^pd_rd_/, /^pf_rd_/, /^[a-z]+_rd_[a-z0-9]+/,
         ],
-    },
-];
+        replacePath: [
+            // 1. パスの途中にある「/ref=...」を削除
+            { from: /\/ref=[^/]+/, to: '', },
+            // 2. ドメインと /dp/（または/gp/）の間にある長い商品名をきれいに削ぎ落とすルール
+            { from: /^\/(?:[^/]+)\/((?:dp|gp)\/[^/]+)/, to: '/$1', },
+        ],
+    }, ];
 ```
+
+> [!TIP]  
+> X(Twitter)の`'name=orig'`も残さない場合は`whiteParams`の`{ key: 'name', value: 'orig', }`をコメントアウト、または削除  
 
 ---
 
 🇺🇸  
 
-A UserScript that automatically removes unnecessary tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) when you copy links on X (Twitter) and YouTube.  
+Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).  
 
 ## 🌟 Key Features  
 
 * **Multi-Site Automatic Cleanup**:  
-  Simply copy links on X (Twitter) or YouTube to save clean URLs to your clipboard without extraneous tracking parameters.  
+  Simply copy links from X (Twitter) posts/profiles, YouTube videos, Bluesky images, or Amazon product pages, and a clean URL without tracking codes will be saved to your clipboard automatically.  
 
-* **Advanced URL Replacement & Whitelisting**:  
-  Replaces parameters (e.g., upgrading `name=large` to `name=orig`) while preserving essential whitelisted parameters (like `format` on X or `t` on YouTube) during both text copying and image right-click operations.  
+* **Comprehensive Global & Site-Specific Control**:  
+  Combines a global parameter removal list (`TRACKING_PARAMS`) with site-specific rules, allowing flexible link optimization from deleting unwanted query keys to rewriting path structures:  
+  * `removeParams`: Deletes specified tracking parameters.  
+  * `replaceParams`: Replaces values of specific parameter keys.  
+  * `whiteParams`: Specifies parameters to preserve/whitelist from deletion.  
+  * `replacePath`: Rewrites URL path structures directly.  
+  *(🍙 Regular Expressions / RegExp are supported across all rule definitions and domain matchers)*  
 
-* **Flexible Customization**:  
-  Easily add support for other websites or customize deletion, replacement, and whitelist rules by editing a few lines in the script configuration (`@match` / `trackingParams` / `siteRules`).  
+* **Easy & Flexible Customization**:  
+  Easily add support for new websites or customize existing deletion, replacement, and whitelist rules by simply modifying the config sections (`TRACKING_PARAMS` / `SITE_RULES`) inside the script.  
 
-* **Zero-Network Image Optimization**:  
-  Employs a `0ms` instant restoration mechanism during right-clicks to update menu URLs without triggering extra network requests.  
+* **Zero-Delay Instant Replacement & Restoration**:  
+  When copying links or image URLs from the right-click context menu, the URL is temporarily cleaned and immediately restored using a `0ms` macrotask. This prevents unnecessary network re-requests while securing a clean URL.  
 
 * **Lightweight & Safe**:  
-  Zero external dependencies. Built exclusively with standard browser APIs for resilience against UI updates.  
+  Zero external library dependencies. Built entirely with native browser APIs, ensuring high stability against website UI layout changes.  
 
 ---
 
@@ -126,75 +158,90 @@ A UserScript that automatically removes unnecessary tracking parameters (e.g., `
 
 You can easily customize rules or add support for new websites with just a few small edits to the script code.  
 
-### 1. Adding Support for a New Website  
+### 1. Adding or Modifying Globally Removed Parameters  
 
-Add a new `// @match` line at the beginning of the script header.  
+Add parameter names to the `TRACKING_PARAMS` array using string formats like `'a'`, `` `b` ``, `"c"`, or `/RegExp/` patterns.  
 
 ```javascript
-// @match          https://example.com/*
+    // Global tracking parameters to remove across all sites
+    const TRACKING_PARAMS = ['s', 't', 'si', 'gclid', 'fbclid',
+        /^ref_/, /^utm_/, // ← Matches any parameters starting with "ref_" or "utm_"
+    ];
 ```
 
-### 2. Adding or Modifying Globally Removed Parameters  
+### 2. Configuring Site-Specific Rules (Remove, Replace, Whitelist, Path Rewrite)  
 
-Add parameter names you wish to remove across all sites to the `trackingParams` array in `'parameter_name'` format.  
+Under `SITE_RULES`, you can configure flexible rule sets for specific target domains using the following four options. Strings and Regular Expressions (RegExp) are supported for all options.  
 
-```javascript
-// Global target parameters to remove across all sites
-const trackingParams = [
-    's', 't', 'ref_src', 'ref_url', 'utm_source', 'utm_medium', 'utm_campaign', 'gclid', 'fbclid',
-    'name',
-    'si',
-    'my_param', // ← Add any parameters you want to remove
-];
-```
+* `domains`: Target domain names or matchers.  
+* `removeParams` (Parameter Deletion): Completely removes specified query parameters from the URL.  
+* `replaceParams` (Parameter Replacement): Replaces the parameter value of matching keys with a new value.  
+* `whiteParams` (Deletion Protection): Protects specified parameters from being deleted even if they match `TRACKING_PARAMS` or `removeParams`.  
+* `replacePath` (Path Rewriting): Rewrites the URL path structure itself (useful for retrieving high-res images or stripping redundant path segments).  
 
-### 3. Configuring Site-Specific Rules (Replacements & Whitelists)  
+> [!CAUTION]  
+> `replaceParams` (value replacement) and `replacePath` (path rewriting) operate independently and are executed before parameter deletion and whitelisting.  
+> `whiteParams` is specifically meant to safeguard parameters from being removed by `TRACKING_PARAMS` or `removeParams`.  
 
-Set up target domains, parameter replacements, or whitelisted parameters inside `siteRules`.  
+### 3. Syntax Example (`SITE_RULES` in v2.0)  
 
 ```javascript
-// Site-specific cleanup rules
-const siteRules = [
-    {
+    // Site-specific cleanup rules
+    const SITE_RULES = [ {
         // X (Twitter)
-        domains: ['x.com', 'twitter.com', 'pbs.twimg.com'],
-        // Parameters to remove for this specific site
+        domains: ['x.com', 'twitter.com', 'pbs.twimg.com',],
+        // Parameters to remove
         removeParams: [
-            'src', // Tracking parameters such as hashtag_click
+            'name',
+            'src', // Tracking parameter for hashtag clicks, etc.
         ],
-        // List of parameters to replace ({ key, from, to })
+        // Parameter replacement list ({ key, from, to })
         replaceParams: [
-            { key: 'name', from: 'large', to: 'orig' }, // Replace 'large' with 'orig'
+            { key: 'name', from: /^(?:large|\d+x\d+)$/, to: 'orig', }, // Replace "large" or "widthxheight" with "orig"
         ],
-        // List of parameters to exclude from deletion / preserve (whitelist)
+        // Whitelist: Parameters to preserve/exempt from deletion
         whiteParams: [
             'format',
-            // { key: 'name', value: 'orig' }, // Preserves only specific values using object notation
+            { key: 'name', value: 'orig', }, // Do not delete when 'name=orig'
         ],
-    },
-    {
+    }, {
         // YouTube
-        domains: ['youtube.com', 'youtu.be'],
-        whiteParams: ['v', 't', 'list', 'index'], // Preserves video IDs, timestamps, playlists, etc.
-    },
-    {
-        // Example rule for a new site
-        domains: ['example.com'],
-        replaceParams: [
-            { key: 'id', from: 'abc', to: '123' }, // Replace 'abc' with '123' for 'id' parameter
+        domains: [ 'youtube.com', 'youtu.be', ],
+        whiteParams: [ 'v', 't', 'list', 'index', ],
+    }, {
+        // note
+        domains: [ 'note.com', ],
+        removeParams: [ 'sub_rt', ],
+    }, {
+        // Bluesky & TOKIMEKI
+        domains: ['bsky.app', ],
+        replacePath: [
+            { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
-        // List of parameters to exclude from deletion / preserve (whitelist)
-        whiteParams: [
-            'id', // Preserve specific parameters
-            { key: 'id', value: 'xyz' }, // Preserves 'id=xyz'
+    }, {
+        // Amazon (Safe domain matching using string array + prefix/exact match RegExp)
+        domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
+        removeParams: [
+            // Standard / Latest tracking parameters
+            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc',
+            // RegExp to catch all recommendation and tracking params starting with pd_rd_*, pf_rd_*, etc.
+            /^pd_rd_/, /^pf_rd_/, /^[a-z]+_rd_[a-z0-9]+/,
         ],
-    },
-];
+        replacePath: [
+            // 1. Remove "/ref=..." from the middle of the path
+            { from: /\/ref=[^/]+/, to: '', },
+            // 2. Strip long product title names between the domain and /dp/ (or /gp/)
+            { from: /^\/(?:[^/]+)\/((?:dp|gp)\/[^/]+)/, to: '/$1', },
+        ],
+    }, ];
 ```
+
+> [!TIP]  
+> If you don't need to preserve `'name=orig'` for X (Twitter), you can comment out or remove `{ key: 'name', value: 'orig', }` from `whiteParams`.  
 
 ---
 
-## ✨ インストール方法 / Installation Guide  
+## ✨ インストール方法 (Installation Guide)  
 
 * **1. UserScriptマネージャーをインストール / Install UserScript Manager:**  
   * **Tampermonkey**: [https://www.tampermonkey.net/](https://www.tampermonkey.net/)  
@@ -204,19 +251,28 @@ const siteRules = [
   * [Greasy Fork](https://greasyfork.org/scripts/588627) にアクセスし、「インストール」ボタンを押してください  
     *(Access Greasy Fork and click the "Install" button)*  
 
-⭐ [スター](https://github.com/neon-aiart/x-clean-copy-link)をポチッとお願いします✨ (Please hit the [Star] button!)  
-
-<a href="https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link"><img src="https://b.hatena.ne.jp/favicon.ico" width="20" height="20" alt="📖"></a> ポチッと[ブックマーク](https://b.hatena.ne.jp/entry/panel/?url=https://github.com/neon-aiart/x-clean-copy-link)をお願い致します✨ (Please click the [Bookmark] button!)  
-
 ---
 
 ## 📝 更新履歴 (Changelog)  
 
-### v2.0 and later (Upcoming Tasks / Backlog)  
+### v2.1 and later (Upcoming Tasks / Backlog)  
 
 No Tasks...  
 
-### v1.9 (Current Release)  
+### v2.0 (Current Release)  
+
+📛 `Partout Purge: Pure Clean Copy Link` に名称変更  
+✅ Clipboard API (writeText) のフックを実装  
+✅ `@match` を全サイト `*://*/*` に変更  
+✅ `document.addEventListener('contextmenu', (e) => {...}`をリンクにも対応  
+✨ `replacePath`を実装  
+✅ 正規表現に対応  
+✅ `SITE_RULES` に `note` `bluesky` `amazon` を追加  
+&emsp; 🧼 **note**: `removeParams: [ 'sub_rt', ]` を追加  
+&emsp; 🧼 **bluesky**: `replacePath: ...` thumbnail ➡️ fullsize を追加  
+&emsp; 🧼 **amazon**: `domains` `replacePath` `removeParams` で正規表現を使用  
+
+### v1.9  
 
 ✅ サイト限定で削除したいパラメータのリスト`removeParams`を実装  
 ☑️ Twitterの削除パラメータに `src` を追加  
@@ -282,8 +338,11 @@ Furthermore, we are actively submitting **Malware / Abuse Reports** to relevant 
 
 ## 🌟 Geminiからの称賛 (Exemplary Achievement)  
 
-一括削除にとどまらず、サイトごとのルール定義と共通削除リストを分離した汎用設計が見事です！  
-XだけでなくYouTubeなどの多様なドメインへ柔軟に拡張しつつ、外部ライブラリ不要・`0ms` の最適化といったこだわりを最小限のコードでスマートに実現する素晴らしいプロダクトです！  
+あらゆるWebサイトの共有リンクから、不要な追跡パラメータや冗長なパスを魔法のように削ぎ落とす、美しく洗練されたユーザースクリプト  
+外部依存ゼロのネイティブ実装でありながら、正規表現を用いた高度なルール制御と `0ms` の遅延フリーな書き換えを実現しており、開発者のこだわりが隅々にまで宿る素晴らしいプロダクトです✨  
+
+A beautifully refined userscript that magically strips away unnecessary tracking parameters and redundant paths from share links across the web.  
+With zero external dependencies and a native implementation, it achieves advanced rule control via Regular Expressions alongside a lag-free `0ms` instant rewrite—a true masterpiece reflecting meticulous attention to detail.  
 
 ---
 
@@ -292,7 +351,11 @@ XだけでなくYouTubeなどの多様なドメインへ柔軟に拡張しつつ
 * **Executive Producer & Lead Architect**: ねおん (Neon)  
 * **Assistant & Core Developer**: Gemini  
 * **Special Thanks**:  
-  * **Ecosystem Platform**: X Corp., Google LLC / YouTube  
+  * **Veteran Social Network**: X Corp.  
+  * **Giants of Video Streaming**: Google LLC / YouTube  
+  * **Pioneer of Text Media**: note, inc.  
+  * **Rising Star of Decentralized Social**: Bluesky PBLLC  
+  * **Emperor of E-Commerce**: Amazon.com, Inc. & Affiliates  
 
 <pre>
 <img src="https://www.google.com/s2/favicons?domain=bsky.app&size=16" alt="Bluesky icon"> Bluesky       :<a href="https://bsky.app/profile/neon-ai.art/">https://bsky.app/profile/neon-ai.art/</a>
@@ -302,6 +365,7 @@ XだけでなくYouTubeなどの多様なドメインへ柔軟に拡張しつつ
 <img src="https://www.google.com/s2/favicons?domain=zenn.dev&size=16" alt="Sizu icon"> Zenn Dev      :<a href="https://zenn.dev/neon_aiart/">https://zenn.dev/neon_aiart/</a>
 <img src="https://www.google.com/s2/favicons?domain=sizu.me&size=16" alt="Sizu icon"> Sizu Diary    :<a href="https://sizu.me/neon_aiart/">https://sizu.me/neon_aiart/</a>
 <img src="https://www.google.com/s2/favicons?domain=ofuse.me&size=16" alt="Ofuse icon"> OFUSE         :<a href="https://ofuse.me/neon/">https://ofuse.me/neon/</a>
+<img src="https://www.google.com/s2/favicons?domain=artria-ai.com&size=16" alt="Artrla icon"> ArtrIa        :<a href="https://neon.artria-ai.com/">https://neon.artria-ai.com/</a>
 <img src="https://www.google.com/s2/favicons?domain=www.chichi-pui.com&size=16" alt="chichi-pui icon"> chichi-pui    :<a href="https://www.chichi-pui.com/users/neon/">https://www.chichi-pui.com/users/neon/</a>
 <img src="https://www.google.com/s2/favicons?domain=iromirai.jp&size=16" alt="iromirai icon"> IROMIRAI      :<a href="https://iromirai.jp/creators/neon/">https://iromirai.jp/creators/neon/</a>
 <img src="https://www.google.com/s2/favicons?domain=www.days-ai.com&size=16" alt="DaysAI icon"> DaysAI        :<a href="https://www.days-ai.com/users/lxeJbaVeYBCUx11QXOee/">https://www.days-ai.com/users/lxeJbaVeYBCUx11QXOee/</a>
