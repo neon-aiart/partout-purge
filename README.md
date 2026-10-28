@@ -104,7 +104,7 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
             { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
     }, {
-        // Amazon (ドメイン判定を安全な文字列配列＋プレフィックス/完全一致に変更)
+        // Amazon (主要な国別ドメインの正規表現リスト)
         domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
         removeParams: [
             // 基本・最新のトラッキングパラメータ
@@ -219,7 +219,7 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
             { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
     }, {
-        // Amazon (Safe domain matching using string array + prefix/exact match RegExp)
+        // Amazon (List of regular expressions for major country-code domains)
         domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
         removeParams: [
             // Standard / Latest tracking parameters

@@ -77,7 +77,7 @@
             { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
     }, {
-        // Amazon (ドメイン判定を安全な文字列配列＋プレフィックス/完全一致に変更)
+        // Amazon (主要な国別ドメインの正規表現リスト)
         domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
         removeParams: [
             // 基本・最新のトラッキングパラメータ
