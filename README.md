@@ -1,6 +1,6 @@
 # 🧼 Partout Purge: Pure Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-2.0-orange.svg)](https://github.com/neon-aiart/partout-purge)
+[![Version](https://img.shields.io/badge/version-2.1-orange.svg)](https://github.com/neon-aiart/partout-purge)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 ⭐ [スター](https://github.com/neon-aiart/partout-purge)をポチッとお願いします✨ (Please hit the [Star] button!)  
@@ -48,17 +48,21 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
 
 ```javascript
     // 全サイト共通の削除対象パラメータ
-    const TRACKING_PARAMS = ['s', 't', 'si', 'gclid', 'fbclid',
+    const TRACKING_PARAMS = ['t', 'si', 'gclid', 'fbclid',
         /^ref_/, /^utm_/, // ← 「ref_」「utm_」で始まるパラメータに全部マッチ
     ];
 ```
+
+> [!IMPORTANT] ドメイン登録の必須性について  
+> `TRACKING_PARAMS` にグローバルな削除パラメータを指定していても、**対象のWebサイトのドメインが `SITE_RULES` の `domains` に含まれていない場合、クリーンアップ処理自体がスルーされます。**  
+> 新しいサイトのパラメータを有効にするには、必ず `SITE_RULES` に対象ドメイン（または正規表現）のルールを追加してください  
 
 ### 2. サイトごとの詳細ルール（削除・置換・ホワイトリスト・パス書き換え）を設定する場合  
 
 `SITE_RULES` では、対象となるドメインに対して、以下の４つの要素を組み合わせて柔軟なルールを設定できます  
 すべてに文字列または正規表現が使えます  
 
-* `domains`: 対象のドメイン  
+* `domains`: 対象のドメイン（※この判定を通過することが処理の必須条件になります）  
 * `removeParams`（パラメータの削除）: 指定したパラメータ名をURLから完全に削除します  
 * `replaceParams`（パラメータの置換）: 特定のキーに一致するパラメータの値を別の値に書き換えます  
 * `whiteParams`（削除からの保護）: 削除対象（`TRACKING_PARAMS` や `removeParams`）にヒットした場合でも、残したいパラメータを指定して保護します  
@@ -68,16 +72,16 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
 > `replaceParams`（値の置換）や `replacePath`（パスの書き換え）は、パラメータの削除・ホワイトリストの対象外です（独立して先に処理される）  
 > `whiteParams` は `TRACKING_PARAMS` や `removeParams` による削除からパラメータを守りたい場合に設定します  
 
-### 3. 書き方の例（v2.0のコードの中の`SITE_RULES`）  
+### 3. 書き方の例（v2.1のコードの中の`SITE_RULES`）  
 
 ```javascript
     // サイトごとのクリーンアップルール
     const SITE_RULES = [ {
         // X (Twitter)
-        domains: ['x.com', 'twitter.com', 'pbs.twimg.com',],
+        domains: [ 'x.com', 'twitter.com', 'pbs.twimg.com', ],
         // 削除したいパラメータ
         removeParams: [
-            'name',
+            'name', 's', 'a',
             'src', // hashtag_click などの計測用パラメータ
         ],
         // 置換したいパラメータのリスト ({ key, from, to })
@@ -99,7 +103,7 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
         removeParams: [ 'sub_rt', ],
     }, {
         // Bluesky ＆ TOKIMEKI
-        domains: ['bsky.app', ],
+        domains: [ 'bsky.app', ],
         replacePath: [
             { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
@@ -118,6 +122,9 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
             // 2. ドメインと /dp/（または/gp/）の間にある長い商品名をきれいに削ぎ落とすルール
             { from: /^\/(?:[^/]+)\/((?:dp|gp)\/[^/]+)/, to: '/$1', },
         ],
+    }, {
+        // Spotify （ウェブプレイヤー / 公式サイト等）: 正規表現を使って *.spotify.com にマッチ
+        domains: [ /^([\w-]+\.)*spotify\.com$/, ], // ドメイン判定を通過
     }, ];
 ```
 
@@ -164,16 +171,20 @@ Add parameter names to the `TRACKING_PARAMS` array using string formats like `'a
 
 ```javascript
     // Global tracking parameters to remove across all sites
-    const TRACKING_PARAMS = ['s', 't', 'si', 'gclid', 'fbclid',
+    const TRACKING_PARAMS = [ 't', 'si', 'gclid', 'fbclid',
         /^ref_/, /^utm_/, // ← Matches any parameters starting with "ref_" or "utm_"
     ];
 ```
+
+> [!IMPORTANT] Domain Registration Requirement  
+> Even if a tracking parameter is specified in the global `TRACKING_PARAMS`, **the cleanup process itself will be skipped if the target website's domain is not included in `SITE_RULES`'s `domains`.**  
+> To enable cleanup for a new site, be sure to add a rule with its domain (or a regular expression) to `SITE_RULES`.  
 
 ### 2. Configuring Site-Specific Rules (Remove, Replace, Whitelist, Path Rewrite)  
 
 Under `SITE_RULES`, you can configure flexible rule sets for specific target domains using the following four options. Strings and Regular Expressions (RegExp) are supported for all options.  
 
-* `domains`: Target domain names or matchers.  
+* `domains`: Target domain names or matchers. (Passing this verification is a required condition for processing.)  
 * `removeParams` (Parameter Deletion): Completely removes specified query parameters from the URL.  
 * `replaceParams` (Parameter Replacement): Replaces the parameter value of matching keys with a new value.  
 * `whiteParams` (Deletion Protection): Protects specified parameters from being deleted even if they match `TRACKING_PARAMS` or `removeParams`.  
@@ -183,16 +194,16 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
 > `replaceParams` (value replacement) and `replacePath` (path rewriting) operate independently and are executed before parameter deletion and whitelisting.  
 > `whiteParams` is specifically meant to safeguard parameters from being removed by `TRACKING_PARAMS` or `removeParams`.  
 
-### 3. Syntax Example (`SITE_RULES` in v2.0)  
+### 3. Syntax Example (`SITE_RULES` in v2.1)  
 
 ```javascript
     // Site-specific cleanup rules
     const SITE_RULES = [ {
         // X (Twitter)
-        domains: ['x.com', 'twitter.com', 'pbs.twimg.com',],
+        domains: [ 'x.com', 'twitter.com', 'pbs.twimg.com', ],
         // Parameters to remove
         removeParams: [
-            'name',
+            'name', 's', 'a',
             'src', // Tracking parameter for hashtag clicks, etc.
         ],
         // Parameter replacement list ({ key, from, to })
@@ -214,7 +225,7 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
         removeParams: [ 'sub_rt', ],
     }, {
         // Bluesky & TOKIMEKI
-        domains: ['bsky.app', ],
+        domains: [ 'bsky.app', ],
         replacePath: [
             { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
@@ -233,6 +244,9 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
             // 2. Strip long product title names between the domain and /dp/ (or /gp/)
             { from: /^\/(?:[^/]+)\/((?:dp|gp)\/[^/]+)/, to: '/$1', },
         ],
+    }, {
+        // Spotify (Web player / Official site, etc.): Match *.spotify.com using a regular expression
+        domains: [ /^([\w-]+\.)*spotify\.com$/, ], // Pass the domain verification
     }, ];
 ```
 
@@ -255,11 +269,18 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
 
 ## 📝 更新履歴 (Changelog)  
 
-### v2.1 and later (Upcoming Tasks / Backlog)  
+### v2.2 and later (Upcoming Tasks / Backlog)  
 
 No Tasks...  
 
-### v2.0 (Current Release)  
+### v2.1 (Current Release)  
+
+🧼 Twitterの `removeParams` に `a` を追加  
+☑️ `s` を `TRACKING_PARAMS` から Twitterの `removeParams` に変更  
+✅ write (ClipboardItem)  
+🧼 `SITE_RULES` に `spotify` を追加  
+
+### v2.0  
 
 📛 `Partout Purge: Pure Clean Copy Link` に名称変更  
 ✅ Clipboard API (writeText) のフックを実装  

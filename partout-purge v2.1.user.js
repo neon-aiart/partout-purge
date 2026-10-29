@@ -5,7 +5,7 @@
 // @description    Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).
 // @description:en Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).
 // @description:ja X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、リンクや画像リンクの不要なトラッキングパラメータ（`?s=20`, `?t=...`, `?si=...` など）を自動削除し、最適化するUserScriptです（編集で拡張可能）
-// @version        2.0
+// @version        2.1
 // @icon           data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧼</text></svg>
 // @author         ねおん
 // @namespace      https://bsky.app/profile/neon-ai.art
@@ -35,22 +35,22 @@
 (function() {
     'use strict';
 
-    const SCRIPT_VERSION = '2.0';
+    const SCRIPT_VERSION = '2.1';
     const DEBUG = false;
     if (DEBUG) console.log(`[${getFormattedDateTime()}] 🧼 Partout Purge: Pure Clean Copy Link v${SCRIPT_VERSION}: デバッグモード`);
 
     // 全サイト共通の削除対象パラメータ
-    const TRACKING_PARAMS = ['s', 't', 'si', 'gclid', 'fbclid',
+    const TRACKING_PARAMS = [ 't', 'si', 'gclid', 'fbclid',
         /^ref_/, /^utm_/, // ← 「ref_」「utm_」で始まるパラメータに全部マッチ
     ];
 
     // サイトごとのクリーンアップルール
     const SITE_RULES = [ {
         // X (Twitter)
-        domains: ['x.com', 'twitter.com', 'pbs.twimg.com',],
+        domains: [ 'x.com', 'twitter.com', 'pbs.twimg.com', ],
         // 削除したいパラメータ
         removeParams: [
-            'name',
+            'name', 's', 'a',
             'src', // hashtag_click などの計測用パラメータ
         ],
         // 置換したいパラメータのリスト ({ key, from, to })
@@ -72,7 +72,7 @@
         removeParams: [ 'sub_rt', ],
     }, {
         // Bluesky ＆ TOKIMEKI
-        domains: ['bsky.app', ],
+        domains: [ 'bsky.app', ],
         replacePath: [
             { from: '/feed_thumbnail', to: '/feed_fullsize', },
         ],
@@ -91,6 +91,9 @@
             // 2. ドメインと /dp/（または/gp/）の間にある長い商品名をきれいに削ぎ落とすルール
             { from: /^\/(?:[^/]+)\/((?:dp|gp)\/[^/]+)/, to: '/$1', },
         ],
+    }, {
+        // Spotify （ウェブプレイヤー / 公式サイト等）: 正規表現を使って *.spotify.com にマッチ
+        domains: [ /^([\w-]+\.)*spotify\.com$/, ], // ドメイン判定を通過
     }, ];
 
     function getFormattedDateTime() {
@@ -138,18 +141,18 @@
             const replacePath = matchedRule?.replacePath || [];
             const removeParams = matchedRule?.removeParams || [];
             const whiteParams = matchedRule?.whiteParams || [];
-            if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] Matched Rule:`, { url, replaceParams, replacePath, removeParams, whiteParams, });
+            if (DEBUG) console.log(`[DEBUG] Matched Rule:`, { url, replaceParams, replacePath, removeParams, whiteParams, });
 
             // 1. パスの置換処理 (replacePath)
             replacePath.forEach(({ from, to, }) => {
                 if (from instanceof RegExp) {
                     if (from.test(url.pathname)) {
                         url.pathname = url.pathname.replace(from, to);
-                        if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] Path Replace (RegExp):`, { url, from, to, });
+                        if (DEBUG) console.log(`[DEBUG] Path Replace (RegExp):`, { url, from, to, });
                     }
                 } else if (typeof from === 'string' && url.pathname.includes(from)) {
                     url.pathname = url.pathname.replace(from, to);
-                    if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] Path Replace (String):`, { url, from, to, });
+                    if (DEBUG) console.log(`[DEBUG] Path Replace (String):`, { url, from, to, });
                 }
             });
 
@@ -164,7 +167,7 @@
                             // 置換後の値を算出（fromが正規表現の場合は置換適用、それ以外は直接to）
                             const newValue = from instanceof RegExp ? paramVal.replace(from, to) : to;
                             url.searchParams.set(paramKey, newValue);
-                            if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] Replace Param:`, { url, paramKey, paramVal, newValue, });
+                            if (DEBUG) console.log(`[DEBUG] Replace Param:`, { url, paramKey, paramVal, newValue, });
                         }
                     }
                 }
@@ -198,7 +201,7 @@
 
                     // ホワイトリストに含まれない場合はパラメータを削除
                     if (!isWhitelisted) {
-                        if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] Delete Param:`, { url, param, });
+                        if (DEBUG) console.log(`[DEBUG] Delete Param:`, { url, param, });
                         url.searchParams.delete(param);
                     }
                 }
@@ -231,17 +234,16 @@
     // 1. シェアボタンやテキスト選択コピー時のイベント（copy）
     document.addEventListener('copy', (e) => {
         const selectionText = window.getSelection().toString();
-        if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Selection Text`, selectionText);
+        if (DEBUG) console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: copy`, selectionText);
         if (selectionText) {
-            if (DEBUG) console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: copy`);
             const cleaned = processText(selectionText);
             if (selectionText !== cleaned) {
                 e.clipboardData.setData('text/plain', cleaned);
                 e.preventDefault();
-                if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Cleaned (Selection Copy)`, cleaned);
+                if (DEBUG) console.log(`Cleaned (Selection Copy)`, cleaned);
             }
-            if (DEBUG) console.groupEnd();
         }
+        if (DEBUG) console.groupEnd();
     });
 
     // 2. 右クリックメニューを開いた時のイベント（contextmenu）
@@ -264,42 +266,111 @@
         }
         if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Target:`, targets);
 
-        // ヒットしたターゲット（最大2つ）をそれぞれ processText に通してクリーンアップ
+        if (targets.length === 0) return;
+
+        if (DEBUG) {
+            console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: contextmenu`);
+            if (aTarget) console.log(`a Target:`, aTarget.href);
+            if (imgTarget) console.log(`img Target:`, imgTarget.src);
+            console.log(`Targets:`, targets);
+        }
+
+        // ヒットしたターゲット（最大２つ）をそれぞれ processText に通してクリーンアップ
         targets.forEach(({ element, prop, url, }) => {
             const cleaned = processText(url);
 
             if (url !== cleaned) {
                 // 右クリックされた瞬間に一時的に綺麗にしたURLへ差し替え
                 element[prop] = cleaned;
-                if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Cleaned (${element.tagName} / ${prop})`, cleaned);
+                if (DEBUG) console.log(`Cleaned (${element.tagName} / ${prop})`, cleaned);
 
                 // メニュー構築完了直後（0ms後のマクロタスク）で即座に復元
                 setTimeout(() => {
                     element[prop] = url;
-                    if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Restored Original (${element.tagName} / ${prop})`, url);
+                    if (DEBUG) console.log(`Restored Original (${element.tagName} / ${prop})`, url);
                 }, 0);
             }
         });
         if (DEBUG) console.groupEnd();
     });
 
-    // 3. モダンな Clipboard API (writeText) のフック
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        const originalWriteText = navigator.clipboard.writeText;
-        navigator.clipboard.writeText = async function(text) {
-            try {
-                if (DEBUG) console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: write text`);
-                const cleaned = processText(text);
-                if (text !== cleaned) {
-                    if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Clipboard.writeText Intercepted`, { before: text, after: cleaned, });
-                    return originalWriteText.call(navigator.clipboard, cleaned);
+    // 3. モダンな Clipboard API (writeText および write) のフック
+    if (navigator.clipboard) {
+        // A. writeText のフック
+        if (navigator.clipboard.writeText) {
+            const originalWriteText = navigator.clipboard.writeText;
+            navigator.clipboard.writeText = async function(text) {
+                try {
+                    if (DEBUG) console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: write text`, text);
+                    const cleaned = typeof text === 'string' ? processText(text) : text;
+                    if (text !== cleaned) {
+                        if (DEBUG) console.log(`Clipboard.writeText Intercepted`, { before: text, after: cleaned, });
+                        return originalWriteText.call(navigator.clipboard, cleaned);
+                    }
+                } catch (e) {
+                    if (DEBUG) console.log(`writeText error`, e);
+                } finally {
+                    if (DEBUG) console.groupEnd();
                 }
-            } catch (e) {
-                // 万が一パースや処理でエラーが出ても、元の処理を止めないようにフォールバック
-            }finally {
-                if (DEBUG) console.groupEnd();
-            }
-            return originalWriteText.call(navigator.clipboard, text);
-        };
+                return originalWriteText.call(navigator.clipboard, text);
+            };
+        }
+
+        // B. write (ClipboardItem) のフック
+        if (navigator.clipboard.write) {
+            const originalWrite = navigator.clipboard.write;
+            navigator.clipboard.write = async function(data) {
+                try {
+                    if (DEBUG) console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: clipboard.write (ClipboardItem)`);
+
+                    const items = Array.isArray(data) ? data : [data, ];
+                    let modified = false;
+                    const newItems = [];
+
+                    for (const item of items) {
+                        if (item && item.types) {
+                            let itemModified = false;
+                            const typeDataMap = {};
+
+                            for (const type of item.types) {
+                                if (type.includes('text')) {
+                                    const blob = await item.getType(type);
+                                    const text = await blob.text();
+
+                                    const cleaned = processText(text);
+                                    if (DEBUG) console.log(`Text Check`, { before: text, after: cleaned, });
+
+                                    if (text !== cleaned) {
+                                        typeDataMap[type] = new Blob([cleaned, ], { type: type, });
+                                        itemModified = true;
+                                        modified = true;
+                                    } else {
+                                        typeDataMap[type] = blob;
+                                    }
+                                }
+                            }
+
+                            if (itemModified) {
+                                newItems.push(new ClipboardItem(typeDataMap));
+                            } else {
+                                newItems.push(item);
+                            }
+                        } else {
+                            newItems.push(item);
+                        }
+                    }
+
+                    if (modified) {
+                        if (DEBUG) console.log(`Returning modified ClipboardItem`);
+                        return originalWrite.call(navigator.clipboard, Array.isArray(data) ? newItems : newItems[0]);
+                    }
+                } catch (e) {
+                    if (DEBUG) console.log(`write error`, e);
+                } finally {
+                    if (DEBUG) console.groupEnd();
+                }
+                return originalWrite.call(navigator.clipboard, data);
+            };
+        }
     }
 })();
