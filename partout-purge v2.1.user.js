@@ -249,22 +249,14 @@
     // 2. 右クリックメニューを開いた時のイベント（contextmenu）
     document.addEventListener('contextmenu', (e) => {
         const targets = [];
-        if (DEBUG) console.groupCollapsed(`[DEBUG] [${getFormattedDateTime()}] 🧼 PPP: contextmenu`);
 
         // A. 上流にある親のリンク (Aタグ) を探す（テキストリンクや画像リンクのURL用）
         const aTarget = e.target.closest('a');
-        if (aTarget && aTarget.href) {
-            targets.push({ element: aTarget, prop: 'href', url: aTarget.href, });
-            if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: a Target:`, aTarget.href);
-        }
+        if (aTarget && aTarget.href) targets.push({ element: aTarget, prop: 'href', url: aTarget.href, });
 
         // B. 直接クリックされた画像 (IMGタグ) または親に近いIMGを探す（画像アドレスコピー用）
         const imgTarget = e.target.closest('img');
-        if (imgTarget && imgTarget.src) {
-            targets.push({ element: imgTarget, prop: 'src', url: imgTarget.src, });
-            if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: img Target:`, imgTarget.src);
-        }
-        if (DEBUG) console.log(`[DEBUG] [${getFormattedDateTime()}] PPP: Target:`, targets);
+        if (imgTarget && imgTarget.src) targets.push({ element: imgTarget, prop: 'src', url: imgTarget.src, });
 
         if (targets.length === 0) return;
 
