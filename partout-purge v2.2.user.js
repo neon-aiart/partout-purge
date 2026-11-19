@@ -5,7 +5,7 @@
 // @description    Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).
 // @description:en Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).
 // @description:ja X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、リンクや画像リンクの不要なトラッキングパラメータ（`?s=20`, `?t=...`, `?si=...` など）を自動削除し、最適化するUserScriptです（編集で拡張可能）
-// @version        2.1
+// @version        2.2
 // @icon           data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧼</text></svg>
 // @author         ねおん
 // @namespace      https://bsky.app/profile/neon-ai.art
@@ -35,7 +35,7 @@
 (function() {
     'use strict';
 
-    const SCRIPT_VERSION = '2.1';
+    const SCRIPT_VERSION = '2.2';
     const DEBUG = false;
     if (DEBUG) console.log(`[${getFormattedDateTime()}] 🧼 Partout Purge: Pure Clean Copy Link v${SCRIPT_VERSION}: デバッグモード`);
 
@@ -81,7 +81,7 @@
         domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
         removeParams: [
             // 基本・最新のトラッキングパラメータ
-            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc',
+            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc', 'jic',
             // pd_rd_*, pf_rd_*, などの計測・レコメンド系パラメータをまとめて一網打尽にする正規表現
             /^pd_rd_/, /^pf_rd_/, /^[a-z]+_rd_[a-z0-9]+/,
         ],

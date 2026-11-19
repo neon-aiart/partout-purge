@@ -1,6 +1,6 @@
 # 🧼 Partout Purge: Pure Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-2.1-orange.svg)](https://github.com/neon-aiart/partout-purge)
+[![Version](https://img.shields.io/badge/version-2.2-orange.svg)](https://github.com/neon-aiart/partout-purge)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 ⭐ [スター](https://github.com/neon-aiart/partout-purge)をポチッとお願いします✨ (Please hit the [Star] button!)  
@@ -112,7 +112,7 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
         domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
         removeParams: [
             // 基本・最新のトラッキングパラメータ
-            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc',
+            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc', 'jic',
             // pd_rd_*, pf_rd_*, などの計測・レコメンド系パラメータをまとめて一網打尽にする正規表現
             /^pd_rd_/, /^pf_rd_/, /^[a-z]+_rd_[a-z0-9]+/,
         ],
@@ -234,7 +234,7 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
         domains: [ /^(?:www\.)?amazon\.(com|co\.jp|co\.uk|de|fr|it|es|ca|com\.au|in|sg|com\.mx|com\.br|ae|sa|eg)$/, ],
         removeParams: [
             // Standard / Latest tracking parameters
-            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc',
+            'ref', '_encoding', 'th', 'tag', 'content-id', 'dib', 'dib_tag', 'geniuslink', 'keywords', 'qid', 'sr', 'ie', 'ats', 'psc', 'jic',
             // RegExp to catch all recommendation and tracking params starting with pd_rd_*, pf_rd_*, etc.
             /^pd_rd_/, /^pf_rd_/, /^[a-z]+_rd_[a-z0-9]+/,
         ],
@@ -269,13 +269,17 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
 
 ## 📝 更新履歴 (Changelog)  
 
-### v2.2 and later (Upcoming Tasks / Backlog)  
+### v2.3 and later (Upcoming Tasks / Backlog)  
 
 No Tasks...  
 
-### v2.1 (Current Release)  
+### v2.2 (Current Release)  
 
-🧼 Twitterの `removeParams` に `a` を追加  
+☑️ Amazon の `removeParams` に `'jic'` を追加  
+
+### v2.1  
+
+🧼 Twitter の `removeParams` に `a` を追加  
 ☑️ `s` を `TRACKING_PARAMS` から Twitterの `removeParams` に変更  
 ✅ write (ClipboardItem)  
 🧼 `SITE_RULES` に `spotify` を追加  
@@ -285,8 +289,8 @@ No Tasks...
 📛 `Partout Purge: Pure Clean Copy Link` に名称変更  
 ✅ Clipboard API (writeText) のフックを実装  
 ✅ `@match` を全サイト `*://*/*` に変更  
-✅ `document.addEventListener('contextmenu', (e) => {...}`をリンクにも対応  
-✨ `replacePath`を実装  
+✅ `document.addEventListener('contextmenu', (e) => {...}` をリンクにも対応  
+✨ `replacePath` を実装  
 ✅ 正規表現に対応  
 ✅ `SITE_RULES` に `note` `bluesky` `amazon` を追加  
 &emsp; 🧼 **note**: `removeParams: [ 'sub_rt', ]` を追加  
@@ -295,7 +299,7 @@ No Tasks...
 
 ### v1.9  
 
-✅ サイト限定で削除したいパラメータのリスト`removeParams`を実装  
+✅ サイト限定で削除したいパラメータのリスト `removeParams` を実装  
 ☑️ Twitterの削除パラメータに `src` を追加  
 
 ### v1.8  
