@@ -1,6 +1,6 @@
 # 🧼 Partout Purge: Pure Clean Copy Link  
 
-[![Version](https://img.shields.io/badge/version-2.2-orange.svg)](https://github.com/neon-aiart/partout-purge)
+[![Version](https://img.shields.io/badge/version-2.3-orange.svg)](https://github.com/neon-aiart/partout-purge)
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 ⭐ [スター](https://github.com/neon-aiart/partout-purge)をポチッとお願いします✨ (Please hit the [Star] button!)  
