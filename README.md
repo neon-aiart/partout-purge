@@ -72,7 +72,7 @@ X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、
 > `replaceParams`（値の置換）や `replacePath`（パスの書き換え）は、パラメータの削除・ホワイトリストの対象外です（独立して先に処理される）  
 > `whiteParams` は `TRACKING_PARAMS` や `removeParams` による削除からパラメータを守りたい場合に設定します  
 
-### 3. 書き方の例（v2.1のコードの中の`SITE_RULES`）  
+### 3. 書き方の例（v2.2のコードの中の`SITE_RULES`）  
 
 ```javascript
     // サイトごとのクリーンアップルール
@@ -194,7 +194,7 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
 > `replaceParams` (value replacement) and `replacePath` (path rewriting) operate independently and are executed before parameter deletion and whitelisting.  
 > `whiteParams` is specifically meant to safeguard parameters from being removed by `TRACKING_PARAMS` or `removeParams`.  
 
-### 3. Syntax Example (`SITE_RULES` in v2.1)  
+### 3. Syntax Example (`SITE_RULES` in v2.2)  
 
 ```javascript
     // Site-specific cleanup rules
@@ -269,13 +269,17 @@ Under `SITE_RULES`, you can configure flexible rule sets for specific target dom
 
 ## 📝 更新履歴 (Changelog)  
 
-### v2.3 and later (Upcoming Tasks / Backlog)  
+### v2.4 and later (Upcoming Tasks / Backlog)  
 
 No Tasks...  
 
-### v2.2 (Current Release)  
+### v2.3 (Current Release)  
 
-☑️ Amazon の `removeParams` に `'jic'` を追加  
+☑️ `domains`に TVer ＆ `removeParams` に `utm_medium` を追加  
+
+### v2.2  
+
+☑️ Amazon の `removeParams` に `jic` を追加  
 
 ### v2.1  
 

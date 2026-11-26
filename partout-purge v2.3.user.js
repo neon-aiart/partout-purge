@@ -5,7 +5,7 @@
 // @description    Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).
 // @description:en Automatically removes tracking parameters (e.g., `?s=20`, `?t=...`, `?si=...`) and optimizes links for major sites like X (Twitter), YouTube, note, Bluesky, and Amazon (extensible via code editing).
 // @description:ja X（Twitter）、YouTube、note、Bluesky、Amazonなどの主要サイトで、リンクや画像リンクの不要なトラッキングパラメータ（`?s=20`, `?t=...`, `?si=...` など）を自動削除し、最適化するUserScriptです（編集で拡張可能）
-// @version        2.2
+// @version        2.3
 // @icon           data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧼</text></svg>
 // @author         ねおん
 // @namespace      https://bsky.app/profile/neon-ai.art
@@ -35,7 +35,7 @@
 (function() {
     'use strict';
 
-    const SCRIPT_VERSION = '2.2';
+    const SCRIPT_VERSION = '2.3';
     const DEBUG = false;
     if (DEBUG) console.log(`[${getFormattedDateTime()}] 🧼 Partout Purge: Pure Clean Copy Link v${SCRIPT_VERSION}: デバッグモード`);
 
@@ -94,6 +94,10 @@
     }, {
         // Spotify （ウェブプレイヤー / 公式サイト等）: 正規表現を使って *.spotify.com にマッチ
         domains: [ /^([\w-]+\.)*spotify\.com$/, ], // ドメイン判定を通過
+    }, {
+        // TVer
+        domains: [ 'tver.jp', ],
+        removeParams: [ 'utm_medium', ],
     }, ];
 
     function getFormattedDateTime() {
